@@ -86,6 +86,18 @@ public class JwtUtil {
     }
 
     /**
+     * 从 Token 中获取过期时间
+     */
+    public static Date getExpirationDate(String token) {
+        try {
+            Claims claims = parseToken(token);
+            return claims.getExpiration();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * 验证 Token 是否过期
      */
     public static boolean isTokenExpired(String token) {

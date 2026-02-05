@@ -159,6 +159,36 @@ public class AuthController {
     }
 
     /**
+     * 用户登出
+     */
+    @PostMapping("/logout")
+    @Operation(summary = "用户登出", description = "使当前Token失效，加入黑名单")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+
+        log.info("收到登出请求");
+
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            log.warn("登出请求失败: 未提供Authorization header");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error(401, "未提供认证Token"));
+        }
+
+        String token = authHeader.startsWith("Bearer ") ? authHeader.substring(7) : authHeader;
+
+        boolean success = authService.logout(token);
+
+        if (success) {
+            log.info("登出成功");
+            return ResponseEntity.ok(ApiResponse.success("登出成功", null));
+        } else {
+            log.warn("登出失败: Token无效");
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(400, "登出失败，Token无效"));
+        }
+    }
+
+    /**
      * Token 验证响应
      */
     public static class TokenValidateResponse {
@@ -170,8 +200,6 @@ public class AuthController {
             this.username = username;
         }
 
-        public boolean isValid() { return valid; }
-        public void setValid(boolean valid) { this.valid = valid; }
         public String getUsername() { return username; }
         public void setUsername(String username) { this.username = username; }
     }

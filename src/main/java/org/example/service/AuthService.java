@@ -21,10 +21,12 @@ public class AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
+    private final TokenBlacklistService tokenBlacklistService;
 
     // 构造器注入
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, TokenBlacklistService tokenBlacklistService) {
         this.userRepository = userRepository;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     /**
@@ -118,6 +120,12 @@ public class AuthService {
     public boolean validateToken(String token) {
         log.debug("验证Token请求");
         try {
+            // 首先检查Token是否在黑名单中
+            if (tokenBlacklistService.isBlacklisted(token)) {
+                log.warn("Token验证失败: Token已在黑名单中（用户已登出）");
+                return false;
+            }
+
             boolean isValid = JwtUtil.validateToken(token);
             if (isValid) {
                 String username = JwtUtil.getUsername(token);
@@ -144,6 +152,41 @@ public class AuthService {
         } catch (Exception e) {
             log.error("从Token获取用户名失败: error={}", e.getMessage(), e);
             return null;
+        }
+    }
+
+    /**
+     * 用户登出
+     * 将Token加入黑名单，使其失效
+     */
+    public boolean logout(String token) {
+        log.info("用户登出请求");
+        try {
+            // 验证Token是否有效（不检查黑名单）
+            if (!JwtUtil.validateToken(token)) {
+                log.warn("登出失败: Token无效或已过期");
+                return false;
+            }
+
+            // 获取Token过期时间
+            java.util.Date expirationDate = JwtUtil.getExpirationDate(token);
+            if (expirationDate == null) {
+                log.warn("登出失败: 无法获取Token过期时间");
+                return false;
+            }
+
+            // 获取用户信息
+            String username = JwtUtil.getUsername(token);
+
+            // 将Token加入黑名单
+            tokenBlacklistService.addToBlacklist(token, expirationDate);
+
+            log.info("用户登出成功: username={}", username);
+            return true;
+
+        } catch (Exception e) {
+            log.error("登出过程中发生错误: error={}", e.getMessage(), e);
+            return false;
         }
     }
 }
