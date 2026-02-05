@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: wms
+
+  # 导入 .env 文件
+  config:
+    import: optional:file:.env[.properties]
+
+  # 数据源配置
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_DATABASE_URL}:${POSTGRES_DATABASE_PORT}/${POSTGRES_DATABASE_NAME}
+    username: ${POSTGRES_DATABASE_USER}
+    password: ${POSTGRES_DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  # JSON 配置
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+# 服务器配置
+server:
+  port: 8080
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+
+# Swagger/OpenAPI 配置
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    org.example: DEBUG
+    org.springframework: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# 开启 debug 模式（显示自动配置报告）
+debug: true
+
