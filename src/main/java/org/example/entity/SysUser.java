@@ -51,22 +51,22 @@ public class SysUser {
     private Long companyId;
 
     /**
-     * 软删除标记 (0-未删除, 1-已删除)
+     * 软删除标记 (false-未删除, true-已删除)
      */
     @TableField("is_delete")
-    private Integer isDelete = 0;
+    private Boolean isDelete = false;
 
     /**
-     * 是否激活 (0-未激活, 1-已激活)
+     * 是否激活 (false-未激活, true-已激活)
      */
     @TableField("is_activated")
-    private Integer isActivated = 0;
+    private Boolean isActivated = false;
 
     /**
-     * 是否云端 (0-否, 1-是)
+     * 是否云端 (false-否, true-是)
      */
     @TableField("is_cloud")
-    private Integer isCloud = 0;
+    private Boolean isCloud = false;
 
     /**
      * 状态（在职、离职）
@@ -147,27 +147,27 @@ public class SysUser {
         this.companyId = companyId;
     }
 
-    public Integer getIsDelete() {
+    public Boolean getIsDelete() {
         return isDelete;
     }
 
-    public void setIsDelete(Integer isDelete) {
+    public void setIsDelete(Boolean isDelete) {
         this.isDelete = isDelete;
     }
 
-    public Integer getIsActivated() {
+    public Boolean getIsActivated() {
         return isActivated;
     }
 
-    public void setIsActivated(Integer isActivated) {
+    public void setIsActivated(Boolean isActivated) {
         this.isActivated = isActivated;
     }
 
-    public Integer getIsCloud() {
+    public Boolean getIsCloud() {
         return isCloud;
     }
 
-    public void setIsCloud(Integer isCloud) {
+    public void setIsCloud(Boolean isCloud) {
         this.isCloud = isCloud;
     }
 

@@ -86,7 +86,7 @@ public class ArchiveService {
         user.setPhone(archive.getPhone());
         user.setName(archive.getName());
         user.setCompanyId(archive.getCompanyId());
-        user.setIsDelete(0);
+        user.setIsDelete(false);
         user.setIsActivated(archive.getIsActivated());
         user.setIsCloud(archive.getIsCloud());
         user.setStatus(archive.getStatus());

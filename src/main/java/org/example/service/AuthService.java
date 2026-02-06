@@ -99,9 +99,9 @@ public class AuthService {
             user.setEmail(email);
             user.setPhone(phone);
             user.setStatus("在职");
-            user.setIsDelete(0);
-            user.setIsActivated(1);
-            user.setIsCloud(0);
+            user.setIsDelete(false);
+            user.setIsActivated(true);
+            user.setIsCloud(false);
 
             // 通过 Repository 保存到数据库
             boolean success = userRepository.save(user);

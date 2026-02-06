@@ -1,6 +1,7 @@
 package org.example.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import java.time.LocalDateTime;
 
 /**
  * 公司实体类
@@ -29,7 +30,7 @@ public class SysCompany {
     /**
      * 国家
      */
-    @TableField("country")
+    @TableField("contry")
     private String country;
 
     /**
@@ -67,6 +68,18 @@ public class SysCompany {
      */
     @TableField("company_code")
     private String companyCode;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    private LocalDateTime createdAt;
+
+    /**
+     * 更新时间
+     */
+    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updatedAt;
 
     // Constructors
     public SysCompany() {
@@ -151,6 +164,22 @@ public class SysCompany {
 
     public void setCompanyCode(String companyCode) {
         this.companyCode = companyCode;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
 

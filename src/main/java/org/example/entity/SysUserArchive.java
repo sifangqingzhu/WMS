@@ -31,13 +31,13 @@ public class SysUserArchive {
     private Long companyId;
 
     @TableField("is_delete")
-    private Integer isDelete;
+    private Boolean isDelete;
 
     @TableField("is_activated")
-    private Integer isActivated;
+    private Boolean isActivated;
 
     @TableField("is_cloud")
-    private Integer isCloud;
+    private Boolean isCloud;
 
     @TableField("status")
     private String status;
@@ -98,14 +98,14 @@ public class SysUserArchive {
     public Long getCompanyId() { return companyId; }
     public void setCompanyId(Long companyId) { this.companyId = companyId; }
 
-    public Integer getIsDelete() { return isDelete; }
-    public void setIsDelete(Integer isDelete) { this.isDelete = isDelete; }
+    public Boolean getIsDelete() { return isDelete; }
+    public void setIsDelete(Boolean isDelete) { this.isDelete = isDelete; }
 
-    public Integer getIsActivated() { return isActivated; }
-    public void setIsActivated(Integer isActivated) { this.isActivated = isActivated; }
+    public Boolean getIsActivated() { return isActivated; }
+    public void setIsActivated(Boolean isActivated) { this.isActivated = isActivated; }
 
-    public Integer getIsCloud() { return isCloud; }
-    public void setIsCloud(Integer isCloud) { this.isCloud = isCloud; }
+    public Boolean getIsCloud() { return isCloud; }
+    public void setIsCloud(Boolean isCloud) { this.isCloud = isCloud; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
