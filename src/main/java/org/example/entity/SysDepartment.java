@@ -29,12 +29,10 @@ public class SysDepartment {
     private Integer level;
 
     /**
-     * 部门树路径
-     * 规则: root(company_id)_predecessors(id)_children(id)
-     * 例如: C001_null_2,3 表示公司C001下的根部门，子部门为2和3
+     * 父部门ID（邻接表设计，通过parent_id表达层级关系）
      */
-    @TableField("dep_tree")
-    private String depTree;
+    @TableField("parent_id")
+    private Long parentId;
 
     /**
      * 所属公司ID
@@ -83,12 +81,12 @@ public class SysDepartment {
         this.level = level;
     }
 
-    public String getDepTree() {
-        return depTree;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setDepTree(String depTree) {
-        this.depTree = depTree;
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public Long getCompanyId() {

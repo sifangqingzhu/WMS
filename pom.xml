@@ -38,6 +38,13 @@
             <version>3.5.5</version>
         </dependency>
 
+        <!-- MyBatis-Plus Join（支持联表查询） -->
+        <dependency>
+            <groupId>com.github.yulichang</groupId>
+            <artifactId>mybatis-plus-join-boot-starter</artifactId>
+            <version>1.4.10</version>
+        </dependency>
+
         <!-- PostgreSQL Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>

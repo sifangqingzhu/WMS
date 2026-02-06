@@ -1,10 +1,10 @@
 package org.example.service;
 
-import org.example.dao.CompanyDao;
 import org.example.dto.CompanyResponse;
 import org.example.dto.CreateCompanyRequest;
 import org.example.entity.SysCompany;
 import org.example.entity.SysUser;
+import org.example.repository.CompanyRepository;
 import org.example.repository.UserRepository;
 import org.example.util.PasswordUtil;
 import org.slf4j.Logger;
@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 public class CompanyService {
 
     private static final Logger log = LoggerFactory.getLogger(CompanyService.class);
-    private final CompanyDao companyDao;
+    private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
 
-    public CompanyService(CompanyDao companyDao, UserRepository userRepository) {
-        this.companyDao = companyDao;
+    public CompanyService(CompanyRepository companyRepository, UserRepository userRepository) {
+        this.companyRepository = companyRepository;
         this.userRepository = userRepository;
     }
 
@@ -32,7 +32,7 @@ public class CompanyService {
     public CompanyResponse createCompany(CreateCompanyRequest request) {
         log.info("创建公司: name={}, code={}", request.getCompanyName(), request.getCompanyCode());
 
-        if (request.getCompanyCode() != null && companyDao.existsByCompanyCode(request.getCompanyCode())) {
+        if (request.getCompanyCode() != null && companyRepository.findByCompanyCode(request.getCompanyCode()) != null) {
             throw new RuntimeException("公司编码已存在: " + request.getCompanyCode());
         }
 
@@ -47,7 +47,7 @@ public class CompanyService {
         company.setPhone(request.getPhone());
         company.setIsDelete(0);
 
-        companyDao.insert(company);
+        companyRepository.save(company);
         log.info("公司创建成功: companyId={}", company.getCompanyId());
 
         // 自动创建公司管理员
@@ -99,7 +99,7 @@ public class CompanyService {
     }
 
     public CompanyResponse getCompanyById(Long companyId) {
-        SysCompany company = companyDao.selectById(companyId);
+        SysCompany company = companyRepository.findById(companyId);
         if (company == null || company.getIsDelete() == 1) {
             return null;
         }
@@ -107,12 +107,12 @@ public class CompanyService {
     }
 
     public List<CompanyResponse> getAllCompanies() {
-        List<SysCompany> companies = companyDao.selectActiveCompanies();
+        List<SysCompany> companies = companyRepository.findActiveCompanies();
         return companies.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
     public CompanyResponse getCompanyByCode(String companyCode) {
-        SysCompany company = companyDao.selectByCompanyCode(companyCode);
+        SysCompany company = companyRepository.findByCompanyCode(companyCode);
         if (company == null || company.getIsDelete() == 1) {
             return null;
         }
@@ -122,15 +122,14 @@ public class CompanyService {
     @Transactional
     public boolean deleteCompany(Long companyId) {
         log.info("软删除公司: companyId={}", companyId);
-        int result = companyDao.softDeleteById(companyId);
-        return result > 0;
+        return companyRepository.softDeleteById(companyId);
     }
 
     @Transactional
     public CompanyResponse updateCompany(Long companyId, CreateCompanyRequest request) {
         log.info("更新公司: companyId={}", companyId);
 
-        SysCompany company = companyDao.selectById(companyId);
+        SysCompany company = companyRepository.findById(companyId);
         if (company == null || company.getIsDelete() == 1) {
             throw new RuntimeException("公司不存在: " + companyId);
         }
@@ -144,7 +143,7 @@ public class CompanyService {
         if (request.getLinkMan() != null) company.setLinkMan(request.getLinkMan());
         if (request.getPhone() != null) company.setPhone(request.getPhone());
 
-        companyDao.updateById(company);
+        companyRepository.updateById(company);
         return convertToResponse(company);
     }
 
@@ -164,4 +163,3 @@ public class CompanyService {
         return response;
     }
 }
-

@@ -1,7 +1,6 @@
 package org.example.repository.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.example.dao.CompanyDao;
 import org.example.entity.SysCompany;
 import org.example.mapper.CompanyMapper;
 import org.example.repository.CompanyRepository;
@@ -11,29 +10,39 @@ import java.util.List;
 
 /**
  * 公司 Repository 实现类
- * Repository层负责业务逻辑封装，调用DAO层
+ * 直接调用 Mapper 层
  */
 @Repository
 public class CompanyRepositoryImpl extends ServiceImpl<CompanyMapper, SysCompany> implements CompanyRepository {
 
-    private final CompanyDao companyDao;
+    private final CompanyMapper companyMapper;
 
-    public CompanyRepositoryImpl(CompanyDao companyDao) {
-        this.companyDao = companyDao;
+    public CompanyRepositoryImpl(CompanyMapper companyMapper) {
+        this.companyMapper = companyMapper;
     }
 
     @Override
     public List<SysCompany> findActiveCompanies() {
-        return companyDao.selectActiveCompanies();
+        return companyMapper.selectActiveCompanies();
     }
 
     @Override
     public SysCompany findByCompanyCode(String companyCode) {
-        return companyDao.selectByCompanyCode(companyCode);
+        return companyMapper.selectByCompanyCode(companyCode);
     }
 
     @Override
     public boolean companyExists(Long companyId) {
-        return companyDao.existsById(companyId);
+        return companyMapper.countActiveById(companyId) > 0;
+    }
+
+    @Override
+    public SysCompany findById(Long companyId) {
+        return companyMapper.selectById(companyId);
+    }
+
+    @Override
+    public boolean softDeleteById(Long companyId) {
+        return companyMapper.softDeleteById(companyId) > 0;
     }
 }

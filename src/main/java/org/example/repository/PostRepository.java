@@ -24,5 +24,10 @@ public interface PostRepository extends IService<SysPost> {
      * 检查部门是否存在
      */
     boolean departmentExists(Long departmentId);
+
+    /**
+     * 根据公司ID查询岗位列表（通过部门关联）
+     */
+    List<SysPost> findByCompanyId(Long companyId);
 }
 

@@ -1,11 +1,11 @@
 package org.example.service;
 
-import org.example.dao.DepartmentDao;
 import org.example.dto.AssignPostRequest;
 import org.example.dto.CreatePostRequest;
 import org.example.dto.PostResponse;
 import org.example.entity.SysDepartment;
 import org.example.entity.SysPost;
+import org.example.repository.DepartmentRepository;
 import org.example.repository.PostRepository;
 import org.example.repository.UserPostRepository;
 import org.springframework.stereotype.Service;
@@ -19,20 +19,20 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserPostRepository userPostRepository;
-    private final DepartmentDao departmentDao;
+    private final DepartmentRepository departmentRepository;
 
     public PostService(PostRepository postRepository,
                        UserPostRepository userPostRepository,
-                       DepartmentDao departmentDao) {
+                       DepartmentRepository departmentRepository) {
         this.postRepository = postRepository;
         this.userPostRepository = userPostRepository;
-        this.departmentDao = departmentDao;
+        this.departmentRepository = departmentRepository;
     }
 
     @Transactional
     public PostResponse createPost(CreatePostRequest request) {
         // 验证部门是否存在
-        if (!postRepository.departmentExists(request.getDepartmentId())) {
+        if (!departmentRepository.existsById(request.getDepartmentId())) {
             throw new RuntimeException("部门不存在");
         }
 
@@ -78,6 +78,11 @@ public class PostService {
         return posts.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
+    public List<PostResponse> getPostsByCompanyId(Long companyId) {
+        List<SysPost> posts = postRepository.findByCompanyId(companyId);
+        return posts.stream().map(this::convertToResponse).collect(Collectors.toList());
+    }
+
     @Transactional
     public boolean deletePost(Long postId) {
         // 检查是否有用户关联此岗位
@@ -98,7 +103,7 @@ public class PostService {
 
         // 获取部门名称
         if (post.getDepartmentId() != null) {
-            SysDepartment department = departmentDao.selectById(post.getDepartmentId());
+            SysDepartment department = departmentRepository.findById(post.getDepartmentId());
             if (department != null) {
                 response.setDepartmentName(department.getDepartmentName());
             }

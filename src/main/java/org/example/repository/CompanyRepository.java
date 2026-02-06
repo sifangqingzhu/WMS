@@ -24,5 +24,15 @@ public interface CompanyRepository extends IService<SysCompany> {
      * 检查公司是否存在
      */
     boolean companyExists(Long companyId);
+
+    /**
+     * 根据ID查询公司
+     */
+    SysCompany findById(Long companyId);
+
+    /**
+     * 软删除公司
+     */
+    boolean softDeleteById(Long companyId);
 }
 

@@ -3,10 +3,10 @@ package org.example.aspect;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.example.dao.UserArchiveDao;
-import org.example.dao.UserDao;
 import org.example.entity.SysUser;
 import org.example.entity.SysUserArchive;
+import org.example.repository.UserArchiveRepository;
+import org.example.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
@@ -25,12 +25,12 @@ public class SoftDeleteAspect {
 
     private static final Logger log = LoggerFactory.getLogger(SoftDeleteAspect.class);
 
-    private final UserDao userDao;
-    private final UserArchiveDao userArchiveDao;
+    private final UserRepository userRepository;
+    private final UserArchiveRepository userArchiveRepository;
 
-    public SoftDeleteAspect(UserDao userDao, UserArchiveDao userArchiveDao) {
-        this.userDao = userDao;
-        this.userArchiveDao = userArchiveDao;
+    public SoftDeleteAspect(UserRepository userRepository, UserArchiveRepository userArchiveRepository) {
+        this.userRepository = userRepository;
+        this.userArchiveRepository = userArchiveRepository;
     }
 
     /**
@@ -50,7 +50,7 @@ public class SoftDeleteAspect {
         log.info("SoftDelete: 开始归档用户, userId={}", userId);
 
         // 1. 查询用户
-        SysUser user = userDao.selectByUserId(userId);
+        SysUser user = userRepository.findById(userId);
         if (user == null) {
             log.warn("SoftDelete: 用户不存在, userId={}", userId);
             return false;
@@ -58,10 +58,10 @@ public class SoftDeleteAspect {
 
         // 2. 创建归档记录
         SysUserArchive archive = SysUserArchive.fromUser(user);
-        userArchiveDao.insert(archive);
+        userArchiveRepository.save(archive);
 
         // 3. 删除原表数据
-        userDao.deleteById(userId);
+        userRepository.delete(userId);
 
         log.info("SoftDelete: 用户归档成功, userId={}", userId);
         return true;
@@ -84,24 +84,24 @@ public class SoftDeleteAspect {
         log.info("RestoreUser: 开始恢复用户, userId={}", userId);
 
         // 1. 查询归档记录
-        List<SysUserArchive> archives = userArchiveDao.selectByUserId(userId);
+        List<SysUserArchive> archives = userArchiveRepository.findByUserId(userId);
         if (archives.isEmpty()) {
             log.warn("RestoreUser: 归档记录不存在, userId={}", userId);
             return false;
         }
 
         // 2. 检查原表是否已存在
-        if (userDao.existsById(userId)) {
+        if (userRepository.existsById(userId)) {
             log.warn("RestoreUser: 用户已存在, userId={}", userId);
             return false;
         }
 
         // 3. 恢复到原表
         SysUser user = convertArchiveToUser(archives.get(0));
-        userDao.insert(user);
+        userRepository.save(user);
 
         // 4. 删除归档记录
-        userArchiveDao.deleteByUserId(userId);
+        userArchiveRepository.deleteByUserId(userId);
 
         log.info("RestoreUser: 用户恢复成功, userId={}", userId);
         return true;

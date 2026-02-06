@@ -118,13 +118,98 @@ public class DepartmentController {
 
         log.info("删除部门请求: departmentId={}", departmentId);
 
-        boolean success = departmentService.deleteDepartment(departmentId);
-        if (success) {
-            log.info("部门删除成功: departmentId={}", departmentId);
-            return ResponseEntity.ok(ApiResponse.success("删除成功", null));
-        } else {
+        try {
+            boolean success = departmentService.deleteDepartment(departmentId);
+            if (success) {
+                log.info("部门删除成功: departmentId={}", departmentId);
+                return ResponseEntity.ok(ApiResponse.success("删除成功", null));
+            } else {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error(400, "删除失败，部门不存在"));
+            }
+        } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(400, "删除失败，部门不存在或存在子部门"));
+                    .body(ApiResponse.error(400, e.getMessage()));
+        }
+    }
+
+    /**
+     * 获取公司部门树
+     */
+    @GetMapping("/company/{companyId}/tree")
+    @Operation(summary = "获取公司部门树", description = "获取公司下的部门树形结构")
+    public ResponseEntity<ApiResponse<List<DepartmentResponse>>> getDepartmentTree(
+            @PathVariable Long companyId) {
+
+        log.info("获取公司部门树: companyId={}", companyId);
+
+        List<DepartmentResponse> tree = departmentService.getDepartmentTree(companyId);
+        return ResponseEntity.ok(ApiResponse.success("获取成功", tree));
+    }
+
+    /**
+     * 获取子部门列表
+     */
+    @GetMapping("/{departmentId}/children")
+    @Operation(summary = "获取子部门列表", description = "获取指定部门的直接子部门")
+    public ResponseEntity<ApiResponse<List<DepartmentResponse>>> getChildDepartments(
+            @PathVariable Long departmentId) {
+
+        log.info("获取子部门列表: departmentId={}", departmentId);
+
+        List<DepartmentResponse> children = departmentService.getChildDepartments(departmentId);
+        return ResponseEntity.ok(ApiResponse.success("获取成功", children));
+    }
+
+    /**
+     * 获取父部门
+     */
+    @GetMapping("/{departmentId}/parent")
+    @Operation(summary = "获取父部门", description = "获取指定部门的父部门")
+    public ResponseEntity<ApiResponse<DepartmentResponse>> getParentDepartment(
+            @PathVariable Long departmentId) {
+
+        log.info("获取父部门: departmentId={}", departmentId);
+
+        DepartmentResponse parent = departmentService.getParentDepartment(departmentId);
+        if (parent == null) {
+            return ResponseEntity.ok(ApiResponse.success("该部门无父部门", null));
+        }
+        return ResponseEntity.ok(ApiResponse.success("获取成功", parent));
+    }
+
+    /**
+     * 获取兄弟部门
+     */
+    @GetMapping("/{departmentId}/siblings")
+    @Operation(summary = "获取兄弟部门", description = "获取与指定部门同级的其他部门")
+    public ResponseEntity<ApiResponse<List<DepartmentResponse>>> getSiblingDepartments(
+            @PathVariable Long departmentId) {
+
+        log.info("获取兄弟部门: departmentId={}", departmentId);
+
+        List<DepartmentResponse> siblings = departmentService.getSiblingDepartments(departmentId);
+        return ResponseEntity.ok(ApiResponse.success("获取成功", siblings));
+    }
+
+    /**
+     * 移动部门
+     */
+    @PutMapping("/{departmentId}/move")
+    @Operation(summary = "移动部门", description = "将部门移动到新的父部门下")
+    public ResponseEntity<ApiResponse<Void>> moveDepartment(
+            @PathVariable Long departmentId,
+            @RequestParam(required = false) Long newParentId) {
+
+        log.info("移动部门: departmentId={}, newParentId={}", departmentId, newParentId);
+
+        try {
+            departmentService.moveDepartment(departmentId, newParentId);
+            return ResponseEntity.ok(ApiResponse.success("移动成功", null));
+        } catch (Exception e) {
+            log.error("移动部门失败: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(400, e.getMessage()));
         }
     }
 }

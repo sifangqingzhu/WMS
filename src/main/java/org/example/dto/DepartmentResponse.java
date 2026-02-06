@@ -4,27 +4,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 部门响应DTO
+ * 部门响应DTO（邻接表设计）
  */
 public class DepartmentResponse {
 
     private Long departmentId;
     private String departmentName;
     private Integer level;
-    private String depTree;
+    private Long parentId;
     private Long companyId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     /**
-     * 解析后的父部门ID列表
+     * 子部门列表（用于树形结构）
      */
-    private List<Long> parentIds;
-
-    /**
-     * 解析后的子部门ID列表
-     */
-    private List<Long> childrenIds;
+    private List<DepartmentResponse> children;
 
     // Getters and Setters
     public Long getDepartmentId() {
@@ -51,12 +46,12 @@ public class DepartmentResponse {
         this.level = level;
     }
 
-    public String getDepTree() {
-        return depTree;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setDepTree(String depTree) {
-        this.depTree = depTree;
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public Long getCompanyId() {
@@ -83,20 +78,12 @@ public class DepartmentResponse {
         this.updatedAt = updatedAt;
     }
 
-    public List<Long> getParentIds() {
-        return parentIds;
+    public List<DepartmentResponse> getChildren() {
+        return children;
     }
 
-    public void setParentIds(List<Long> parentIds) {
-        this.parentIds = parentIds;
-    }
-
-    public List<Long> getChildrenIds() {
-        return childrenIds;
-    }
-
-    public void setChildrenIds(List<Long> childrenIds) {
-        this.childrenIds = childrenIds;
+    public void setChildren(List<DepartmentResponse> children) {
+        this.children = children;
     }
 }
 

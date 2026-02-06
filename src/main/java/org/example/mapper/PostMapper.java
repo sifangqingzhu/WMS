@@ -1,23 +1,45 @@
 package org.example.mapper;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.example.entity.SysPost;
+
 import java.util.List;
+
 /**
  * 岗位 Mapper 接口
+ * 所有数据库操作都在这里
  */
 @Mapper
 public interface PostMapper extends BaseMapper<SysPost> {
-    /**
-     * 根据部门ID查询岗位列表
-     */
-    @Select("SELECT * FROM sys_post WHERE department_id = #{departmentId}")
-    List<SysPost> selectByDepartmentId(@Param("departmentId") Long departmentId);
-    /**
-     * 根据用户ID查询岗位列表
-     */
-    @Select("SELECT p.* FROM sys_post p INNER JOIN sys_user_post up ON p.post_id = up.post_id WHERE up.user_id = #{userId}")
-    List<SysPost> selectByUserId(@Param("userId") String userId);
+
+    default List<SysPost> selectByDepartmentId(Long departmentId) {
+        return selectList(new LambdaQueryWrapper<SysPost>()
+                .eq(SysPost::getDepartmentId, departmentId));
+    }
+
+    default SysPost selectByNameAndDepartmentId(String postName, Long departmentId) {
+        return selectOne(new LambdaQueryWrapper<SysPost>()
+                .eq(SysPost::getPostName, postName)
+                .eq(SysPost::getDepartmentId, departmentId));
+    }
+
+    default long countByDepartmentId(Long departmentId) {
+        return selectCount(new LambdaQueryWrapper<SysPost>()
+                .eq(SysPost::getDepartmentId, departmentId));
+    }
+
+    default long countById(Long postId) {
+        return selectCount(new LambdaQueryWrapper<SysPost>()
+                .eq(SysPost::getPostId, postId));
+    }
+
+    default List<SysPost> selectByPostIds(List<Long> postIds) {
+        if (postIds == null || postIds.isEmpty()) {
+            return List.of();
+        }
+        return selectList(new LambdaQueryWrapper<SysPost>()
+                .in(SysPost::getPostId, postIds));
+    }
 }

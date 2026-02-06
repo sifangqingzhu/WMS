@@ -1,38 +1,53 @@
 package org.example.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 import org.example.entity.SysDepartment;
 
 import java.util.List;
 
-/**
- * 部门 Mapper 接口
- */
 @Mapper
-@SuppressWarnings("unused")
 public interface DepartmentMapper extends BaseMapper<SysDepartment> {
 
-    /**
-     * 根据公司ID查询部门列表
-     */
-    @Select("SELECT * FROM sys_department WHERE company_id = #{companyId}")
-    List<SysDepartment> selectByCompanyId(@Param("companyId") Long companyId);
+    default List<SysDepartment> selectByCompanyId(Long companyId) {
+        return selectList(new LambdaQueryWrapper<SysDepartment>()
+                .eq(SysDepartment::getCompanyId, companyId)
+                .orderByAsc(SysDepartment::getLevel)
+                .orderByAsc(SysDepartment::getDepartmentId));
+    }
 
-    /**
-     * 根据父部门ID查询子部门
-     */
-    @Select("SELECT * FROM sys_department WHERE dep_tree LIKE CONCAT('%_', #{parentId}, '_%') OR dep_tree LIKE CONCAT('%_', #{parentId})")
-    List<SysDepartment> selectByParentId(@Param("parentId") Long parentId);
+    default List<SysDepartment> selectByParentId(Long parentId) {
+        return selectList(new LambdaQueryWrapper<SysDepartment>()
+                .eq(SysDepartment::getParentId, parentId)
+                .orderByAsc(SysDepartment::getDepartmentId));
+    }
 
-    /**
-     * 更新部门的dep_tree字段
-     */
-    @Update("UPDATE sys_department SET dep_tree = #{depTree} WHERE department_id = #{departmentId}")
-    int updateDepTree(@Param("departmentId") Long departmentId, @Param("depTree") String depTree);
+    default List<SysDepartment> selectRootDepartments(Long companyId) {
+        return selectList(new LambdaQueryWrapper<SysDepartment>()
+                .isNull(SysDepartment::getParentId)
+                .eq(SysDepartment::getCompanyId, companyId)
+                .orderByAsc(SysDepartment::getDepartmentId));
+    }
+
+    default SysDepartment selectByNameAndCompanyId(String departmentName, Long companyId) {
+        return selectOne(new LambdaQueryWrapper<SysDepartment>()
+                .eq(SysDepartment::getDepartmentName, departmentName)
+                .eq(SysDepartment::getCompanyId, companyId));
+    }
+
+    default long countByCompanyId(Long companyId) {
+        return selectCount(new LambdaQueryWrapper<SysDepartment>()
+                .eq(SysDepartment::getCompanyId, companyId));
+    }
+
+    default long countByParentId(Long parentId) {
+        return selectCount(new LambdaQueryWrapper<SysDepartment>()
+                .eq(SysDepartment::getParentId, parentId));
+    }
+
+    default long countById(Long departmentId) {
+        return selectCount(new LambdaQueryWrapper<SysDepartment>()
+                .eq(SysDepartment::getDepartmentId, departmentId));
+    }
 }
-
-

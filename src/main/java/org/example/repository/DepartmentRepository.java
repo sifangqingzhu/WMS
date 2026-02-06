@@ -39,10 +39,6 @@ public interface DepartmentRepository {
      */
     int update(SysDepartment department);
 
-    /**
-     * 更新部门树路径
-     */
-    int updateDepTree(Long departmentId, String depTree);
 
     /**
      * 删除部门
