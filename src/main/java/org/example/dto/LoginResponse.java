@@ -17,17 +17,17 @@ public class LoginResponse {
     /**
      * 用户ID
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 用户名
      */
-    private String username;
+    private String userName;
 
     /**
-     * 真实姓名
+     * 姓名
      */
-    private String realName;
+    private String name;
 
     /**
      * 消息
@@ -37,12 +37,12 @@ public class LoginResponse {
     public LoginResponse() {
     }
 
-    public LoginResponse(boolean success, String token, Long userId, String username, String realName, String message) {
+    public LoginResponse(boolean success, String token, String userId, String userName, String name, String message) {
         this.success = success;
         this.token = token;
         this.userId = userId;
-        this.username = username;
-        this.realName = realName;
+        this.userName = userName;
+        this.name = name;
         this.message = message;
     }
 
@@ -59,13 +59,13 @@ public class LoginResponse {
     /**
      * 创建成功的响应
      */
-    public static LoginResponse success(String token, Long userId, String username, String realName) {
+    public static LoginResponse success(String token, String userId, String userName, String name) {
         LoginResponse response = new LoginResponse();
         response.setSuccess(true);
         response.setToken(token);
         response.setUserId(userId);
-        response.setUsername(username);
-        response.setRealName(realName);
+        response.setUserName(userName);
+        response.setName(name);
         response.setMessage("登录成功");
         return response;
     }
@@ -87,28 +87,28 @@ public class LoginResponse {
         this.token = token;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getRealName() {
-        return realName;
+    public String getName() {
+        return name;
     }
 
-    public void setRealName(String realName) {
-        this.realName = realName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getMessage() {

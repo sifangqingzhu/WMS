@@ -15,9 +15,9 @@ public class RegisterRequest {
     private String password;
 
     /**
-     * 真实姓名
+     * 姓名
      */
-    private String realName;
+    private String name;
 
     /**
      * 邮箱
@@ -32,10 +32,10 @@ public class RegisterRequest {
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String username, String password, String realName, String email, String phone) {
+    public RegisterRequest(String username, String password, String name, String email, String phone) {
         this.username = username;
         this.password = password;
-        this.realName = realName;
+        this.name = name;
         this.email = email;
         this.phone = phone;
     }
@@ -57,12 +57,26 @@ public class RegisterRequest {
         this.password = password;
     }
 
-    public String getRealName() {
-        return realName;
+    public String getName() {
+        return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * 兼容旧版API的getter
+     */
+    public String getRealName() {
+        return name;
+    }
+
+    /**
+     * 兼容旧版API的setter
+     */
     public void setRealName(String realName) {
-        this.realName = realName;
+        this.name = realName;
     }
 
     public String getEmail() {

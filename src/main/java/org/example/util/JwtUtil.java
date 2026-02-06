@@ -38,7 +38,7 @@ public class JwtUtil {
      * @param username 用户名
      * @return JWT Token
      */
-    public static String generateToken(Long userId, String username) {
+    public static String generateToken(String userId, String username) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("username", username);
@@ -72,9 +72,9 @@ public class JwtUtil {
     /**
      * 从 Token 中获取用户ID
      */
-    public static Long getUserId(String token) {
+    public static String getUserId(String token) {
         Claims claims = parseToken(token);
-        return claims.get("userId", Long.class);
+        return claims.get("userId", String.class);
     }
 
     /**

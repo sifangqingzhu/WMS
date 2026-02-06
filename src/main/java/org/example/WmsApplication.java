@@ -7,6 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * WMS 仓库管理系统 - Spring Boot 应用入口
@@ -19,11 +27,15 @@ public class WmsApplication implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final AuthService authService;
+    private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     // 构造器注入
-    public WmsApplication(UserRepository userRepository, AuthService authService) {
+    public WmsApplication(UserRepository userRepository,
+                          AuthService authService,
+                          RequestMappingHandlerMapping requestMappingHandlerMapping) {
         this.userRepository = userRepository;
         this.authService = authService;
+        this.requestMappingHandlerMapping = requestMappingHandlerMapping;
     }
 
     public static void main(String[] args) {
@@ -57,11 +69,60 @@ public class WmsApplication implements CommandLineRunner {
         log.info("Swagger文档: http://localhost:8080/swagger-ui.html");
         log.info("API文档: http://localhost:8080/v3/api-docs");
         log.info("================================");
-        log.info("可用的 API 接口：");
-        log.info("  POST   /api/auth/login      - 用户登录");
-        log.info("  POST   /api/auth/register   - 用户注册");
-        log.info("  POST   /api/auth/validate   - 验证 Token");
-        log.info("  GET    /api/auth/me         - 获取当前用户信息");
+
+        // 动态获取并输出所有API接口
+        printAllApiEndpoints();
+
         log.info("================================");
+    }
+
+    /**
+     * 动态获取并打印所有API接口
+     */
+    private void printAllApiEndpoints() {
+        log.info("可用的 API 接口：");
+
+        Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
+        List<String> endpoints = new ArrayList<>();
+
+        for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
+            RequestMappingInfo mappingInfo = entry.getKey();
+            HandlerMethod handlerMethod = entry.getValue();
+
+            // 只显示org.example包下的接口
+            String controllerClass = handlerMethod.getBeanType().getName();
+            if (!controllerClass.startsWith("org.example")) {
+                continue;
+            }
+
+            // 获取请求方法
+            String methods = mappingInfo.getMethodsCondition().getMethods().toString();
+            if (methods.equals("[]")) {
+                methods = "ALL";
+            } else {
+                methods = methods.replace("[", "").replace("]", "");
+            }
+
+            // 获取路径
+            String paths = mappingInfo.getPathPatternsCondition() != null
+                    ? mappingInfo.getPathPatternsCondition().getPatterns().toString()
+                    : mappingInfo.getPatternsCondition() != null
+                    ? mappingInfo.getPatternsCondition().getPatterns().toString()
+                    : "[]";
+            paths = paths.replace("[", "").replace("]", "");
+
+            // 获取方法名作为描述
+            String methodName = handlerMethod.getMethod().getName();
+
+            endpoints.add(String.format("  %-6s %-35s - %s", methods, paths, methodName));
+        }
+
+        // 排序后输出
+        endpoints.sort(Comparator.naturalOrder());
+        for (String endpoint : endpoints) {
+            log.info(endpoint);
+        }
+
+        log.info("共 {} 个接口", endpoints.size());
     }
 }

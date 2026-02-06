@@ -11,26 +11,20 @@ public class SysUser {
     /**
      * 用户ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "user_id", type = IdType.INPUT)
+    private String userId;
 
     /**
      * 用户名
      */
-    @TableField("username")
-    private String username;
+    @TableField("user_name")
+    private String userName;
 
     /**
      * 密码（加密后）
      */
     @TableField("password")
     private String password;
-
-    /**
-     * 真实姓名
-     */
-    @TableField("real_name")
-    private String realName;
 
     /**
      * 邮箱
@@ -45,10 +39,40 @@ public class SysUser {
     private String phone;
 
     /**
-     * 用户状态（0-禁用，1-启用）
+     * 姓名
+     */
+    @TableField("name")
+    private String name;
+
+    /**
+     * 上级公司ID
+     */
+    @TableField("company_id")
+    private String companyId;
+
+    /**
+     * 软删除标记 (0-未删除, 1-已删除)
+     */
+    @TableField("is_delete")
+    private Integer isDelete = 0;
+
+    /**
+     * 是否激活 (0-未激活, 1-已激活)
+     */
+    @TableField("is_activated")
+    private Integer isActivated = 0;
+
+    /**
+     * 是否云端 (0-否, 1-是)
+     */
+    @TableField("is_cloud")
+    private Integer isCloud = 0;
+
+    /**
+     * 状态（在职、离职）
      */
     @TableField("status")
-    private Integer status = 1;
+    private String status;
 
     /**
      * 创建时间
@@ -66,34 +90,21 @@ public class SysUser {
     public SysUser() {
     }
 
-    public SysUser(Long id, String username, String password, String realName, String email,
-                   String phone, Integer status, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.realName = realName;
-        this.email = email;
-        this.phone = phone;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
     // Getters and Setters
-    public Long getId() {
-        return id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
@@ -102,14 +113,6 @@ public class SysUser {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRealName() {
-        return realName;
-    }
-
-    public void setRealName(String realName) {
-        this.realName = realName;
     }
 
     public String getEmail() {
@@ -128,11 +131,51 @@ public class SysUser {
         this.phone = phone;
     }
 
-    public Integer getStatus() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    public Integer getIsActivated() {
+        return isActivated;
+    }
+
+    public void setIsActivated(Integer isActivated) {
+        this.isActivated = isActivated;
+    }
+
+    public Integer getIsCloud() {
+        return isCloud;
+    }
+
+    public void setIsCloud(Integer isCloud) {
+        this.isCloud = isCloud;
+    }
+
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

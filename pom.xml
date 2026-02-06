@@ -78,6 +78,12 @@
             <version>0.4</version>
         </dependency>
 
+        <!-- Spring AOP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- Redisson -->
         <dependency>
             <groupId>org.redisson</groupId>

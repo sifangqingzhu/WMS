@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 /**
  * 认证服务类
  * 使用构造器注入，完全解耦
@@ -48,7 +50,7 @@ public class AuthService {
                 return LoginResponse.fail("用户名或密码错误");
             }
 
-            log.debug("DEBUG: 用户查询成功, userId={}, 开始验证密码", user.getId());
+            log.debug("DEBUG: 用户查询成功, userId={}, 开始验证密码", user.getUserId());
             // 验证密码
             if (!PasswordUtil.verifyPassword(request.getPassword(), user.getPassword())) {
                 log.warn("登录失败: 密码错误, username={}", request.getUsername());
@@ -58,14 +60,14 @@ public class AuthService {
 
             log.debug("DEBUG: 密码验证成功, 开始生成 JWT Token");
             // 生成 JWT Token
-            String token = JwtUtil.generateToken(user.getId(), user.getUsername());
+            String token = JwtUtil.generateToken(user.getUserId(), user.getUserName());
             log.debug("DEBUG: JWT Token 生成成功, token={}", token.substring(0, 20) + "...");
 
-            log.info("用户登录成功: userId={}, username={}", user.getId(), user.getUsername());
+            log.info("用户登录成功: userId={}, userName={}", user.getUserId(), user.getUserName());
             log.info("========== 用户登录请求结束 ==========");
 
             // 返回成功响应
-            return LoginResponse.success(token, user.getId(), user.getUsername(), user.getRealName());
+            return LoginResponse.success(token, user.getUserId(), user.getUserName(), user.getName());
 
         } catch (Exception e) {
             log.error("登录过程中发生错误: username={}, error={}", request.getUsername(), e.getMessage(), e);
@@ -78,8 +80,8 @@ public class AuthService {
      * 创建用户（注册）
      */
     @Transactional
-    public boolean register(String username, String password, String realName, String email, String phone) {
-        log.info("用户注册请求: username={}, realName={}, email={}", username, realName, email);
+    public boolean register(String username, String password, String name, String email, String phone) {
+        log.info("用户注册请求: username={}, name={}, email={}", username, name, email);
 
         try {
             // 通过 Repository 检查用户是否已存在
@@ -90,18 +92,22 @@ public class AuthService {
 
             // 创建用户对象
             SysUser user = new SysUser();
-            user.setUsername(username);
+            user.setUserId(UUID.randomUUID().toString().replace("-", ""));
+            user.setUserName(username);
             user.setPassword(PasswordUtil.hashPassword(password));
-            user.setRealName(realName);
+            user.setName(name);
             user.setEmail(email);
             user.setPhone(phone);
-            user.setStatus(1);
+            user.setStatus("在职");
+            user.setIsDelete(0);
+            user.setIsActivated(1);
+            user.setIsCloud(0);
 
             // 通过 Repository 保存到数据库
             boolean success = userRepository.save(user);
 
             if (success) {
-                log.info("用户注册成功: userId={}, username={}", user.getId(), user.getUsername());
+                log.info("用户注册成功: userId={}, userName={}", user.getUserId(), user.getUserName());
             } else {
                 log.warn("用户注册失败: username={}", username);
             }

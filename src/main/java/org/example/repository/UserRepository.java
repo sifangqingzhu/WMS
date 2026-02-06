@@ -35,10 +35,10 @@ public class UserRepository {
         }
     }
 
-    public SysUser findById(Long id) {
-        log.debug("Repository: findById, id={}", id);
+    public SysUser findById(String userId) {
+        log.debug("Repository: findById, userId={}", userId);
         try {
-            return userDao.selectById(id);
+            return userDao.selectById(userId);
         } catch (Exception e) {
             log.error("Repository: findById failed, error={}", e.getMessage(), e);
             throw new RuntimeException("查找用户失败", e);
@@ -55,8 +55,18 @@ public class UserRepository {
         }
     }
 
+    public boolean existsById(String userId) {
+        log.debug("Repository: existsById, userId={}", userId);
+        try {
+            return userDao.existsById(userId);
+        } catch (Exception e) {
+            log.error("Repository: existsById failed, error={}", e.getMessage(), e);
+            throw new RuntimeException("检查用户ID失败", e);
+        }
+    }
+
     public boolean save(SysUser user) {
-        log.info("Repository: save, username={}", user.getUsername());
+        log.info("Repository: save, userName={}", user.getUserName());
         try {
             int result = userDao.insert(user);
             return result > 0;
@@ -67,7 +77,7 @@ public class UserRepository {
     }
 
     public boolean update(SysUser user) {
-        log.info("Repository: update, userId={}", user.getId());
+        log.info("Repository: update, userId={}", user.getUserId());
         try {
             int result = userDao.updateById(user);
             return result > 0;
@@ -77,10 +87,10 @@ public class UserRepository {
         }
     }
 
-    public boolean delete(Long id) {
-        log.info("Repository: delete, userId={}", id);
+    public boolean delete(String userId) {
+        log.info("Repository: delete, userId={}", userId);
         try {
-            int result = userDao.deleteById(id);
+            int result = userDao.deleteById(userId);
             return result > 0;
         } catch (Exception e) {
             log.error("Repository: delete failed, error={}", e.getMessage(), e);
@@ -118,7 +128,7 @@ public class UserRepository {
         }
     }
 
-    public IPage<SysUser> findPageByCondition(int pageNum, int pageSize, Integer status, String keyword) {
+    public IPage<SysUser> findPageByCondition(int pageNum, int pageSize, String status, String keyword) {
         log.debug("Repository: findPageByCondition");
         try {
             return userDao.selectPageWithCondition(pageNum, pageSize, status, keyword);

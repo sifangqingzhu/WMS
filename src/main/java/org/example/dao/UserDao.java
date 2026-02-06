@@ -3,6 +3,8 @@ package org.example.dao;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.example.annotation.RestoreUser;
+import org.example.annotation.SoftDelete;
 import org.example.entity.SysUser;
 import org.example.mapper.UserMapper;
 import org.slf4j.Logger;
@@ -30,13 +32,15 @@ public class UserDao {
     public SysUser selectByUsername(String username) {
         log.debug("DAO: selectByUsername, username={}", username);
         QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
-        wrapper.eq("username", username);
+        wrapper.eq("user_name", username);
         return userMapper.selectOne(wrapper);
     }
 
-    public SysUser selectById(Long id) {
-        log.debug("DAO: selectById, id={}", id);
-        return userMapper.selectById(id);
+    public SysUser selectById(String userId) {
+        log.debug("DAO: selectById, userId={}", userId);
+        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", userId);
+        return userMapper.selectOne(wrapper);
     }
 
     public List<SysUser> selectAll() {
@@ -54,7 +58,7 @@ public class UserDao {
     public Long countByUsername(String username) {
         log.debug("DAO: countByUsername, username={}", username);
         QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
-        wrapper.eq("username", username);
+        wrapper.eq("user_name", username);
         return userMapper.selectCount(wrapper);
     }
 
@@ -71,18 +75,43 @@ public class UserDao {
     }
 
     public int insert(SysUser user) {
-        log.debug("DAO: insert, username={}", user.getUsername());
+        log.debug("DAO: insert, userName={}", user.getUserName());
         return userMapper.insert(user);
     }
 
     public int updateById(SysUser user) {
-        log.debug("DAO: updateById, id={}", user.getId());
+        log.debug("DAO: updateById, userId={}", user.getUserId());
         return userMapper.updateById(user);
     }
 
-    public int deleteById(Long id) {
-        log.debug("DAO: deleteById, id={}", id);
-        return userMapper.deleteById(id);
+    /**
+     * 删除用户（物理删除）
+     */
+    public int deleteById(String userId) {
+        log.debug("DAO: deleteById, userId={}", userId);
+        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", userId);
+        return userMapper.delete(wrapper);
+    }
+
+    /**
+     * 软删除用户（归档）
+     * 使用@SoftDelete注解，切面自动处理归档逻辑
+     */
+    @SoftDelete
+    public boolean softDeleteById(String userId) {
+        log.debug("DAO: softDeleteById, userId={}", userId);
+        return false; // 切面处理
+    }
+
+    /**
+     * 恢复用户（从归档表恢复）
+     * 使用@RestoreUser注解，切面自动处理恢复逻辑
+     */
+    @RestoreUser
+    public boolean restoreById(String userId) {
+        log.debug("DAO: restoreById, userId={}", userId);
+        return false; // 切面处理
     }
 
     public IPage<SysUser> selectPage(int pageNum, int pageSize) {
@@ -91,7 +120,7 @@ public class UserDao {
         return userMapper.selectPage(page, null);
     }
 
-    public IPage<SysUser> selectPageWithCondition(int pageNum, int pageSize, Integer status, String keyword) {
+    public IPage<SysUser> selectPageWithCondition(int pageNum, int pageSize, String status, String keyword) {
         log.debug("DAO: selectPageWithCondition");
         Page<SysUser> page = new Page<>(pageNum, pageSize);
         QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
@@ -99,9 +128,32 @@ public class UserDao {
             wrapper.eq("status", status);
         }
         if (keyword != null && !keyword.trim().isEmpty()) {
-            wrapper.and(w -> w.like("username", keyword).or().like("real_name", keyword));
+            wrapper.and(w -> w.like("user_name", keyword).or().like("name", keyword));
         }
+        wrapper.eq("is_delete", 0);
         wrapper.orderByDesc("created_at");
         return userMapper.selectPage(page, wrapper);
+    }
+
+    /**
+     * 检查用户是否存在（根据user_id）
+     */
+    public boolean existsById(String userId) {
+        log.debug("DAO: existsById, userId={}", userId);
+        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", userId)
+               .eq("is_delete", 0);
+        return userMapper.selectCount(wrapper) > 0;
+    }
+
+    /**
+     * 根据用户ID查询（String类型）
+     */
+    public SysUser selectByUserId(String userId) {
+        log.debug("DAO: selectByUserId, userId={}", userId);
+        QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", userId)
+               .eq("is_delete", 0);
+        return userMapper.selectOne(wrapper);
     }
 }
