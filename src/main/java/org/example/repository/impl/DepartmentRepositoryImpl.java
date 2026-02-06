@@ -37,7 +37,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
     }
 
     @Override
-    public List<SysDepartment> findByCompanyId(String companyId) {
+    public List<SysDepartment> findByCompanyId(Long companyId) {
         log.debug("Repository: findByCompanyId, companyId={}", companyId);
         return departmentDao.selectByCompanyId(companyId);
     }
@@ -79,15 +79,14 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
     }
 
     @Override
-    public long countByCompanyId(String companyId) {
+    public long countByCompanyId(Long companyId) {
         log.debug("Repository: countByCompanyId, companyId={}", companyId);
         return departmentDao.countByCompanyId(companyId);
     }
 
     @Override
-    public SysDepartment findByNameAndCompanyId(String departmentName, String companyId) {
+    public SysDepartment findByNameAndCompanyId(String departmentName, Long companyId) {
         log.debug("Repository: findByNameAndCompanyId, departmentName={}, companyId={}", departmentName, companyId);
         return departmentDao.selectByNameAndCompanyId(departmentName, companyId);
     }
 }
-

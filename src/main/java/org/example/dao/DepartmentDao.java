@@ -42,7 +42,7 @@ public class DepartmentDao {
     /**
      * 根据公司ID查询部门列表
      */
-    public List<SysDepartment> selectByCompanyId(String companyId) {
+    public List<SysDepartment> selectByCompanyId(Long companyId) {
         log.debug("DAO: selectByCompanyId, companyId={}", companyId);
         return departmentMapper.selectByCompanyId(companyId);
     }
@@ -58,7 +58,7 @@ public class DepartmentDao {
     /**
      * 根据部门名称和公司ID查询
      */
-    public SysDepartment selectByNameAndCompanyId(String departmentName, String companyId) {
+    public SysDepartment selectByNameAndCompanyId(String departmentName, Long companyId) {
         log.debug("DAO: selectByNameAndCompanyId, departmentName={}, companyId={}", departmentName, companyId);
         QueryWrapper<SysDepartment> wrapper = new QueryWrapper<>();
         wrapper.eq("department_name", departmentName)
@@ -109,7 +109,7 @@ public class DepartmentDao {
     /**
      * 统计公司下的部门数量
      */
-    public long countByCompanyId(String companyId) {
+    public long countByCompanyId(Long companyId) {
         log.debug("DAO: countByCompanyId, companyId={}", companyId);
         QueryWrapper<SysDepartment> wrapper = new QueryWrapper<>();
         wrapper.eq("company_id", companyId);

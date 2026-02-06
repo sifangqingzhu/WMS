@@ -80,11 +80,11 @@ public class DepartmentService {
      * 构建dep_tree字符串
      * 规则: root(company_id)_predecessors(id)_children(id)
      */
-    private String buildDepTree(String companyId, Long parentId) {
+    private String buildDepTree(Long companyId, Long parentId) {
         StringBuilder depTree = new StringBuilder();
 
-        // 1. root节点 (company_id)
-        depTree.append(companyId);
+        // 1. root节点 (company_id) - Long转String存储
+        depTree.append(String.valueOf(companyId));
         depTree.append("_");
 
         // 2. predecessors (父部门ID链)
@@ -152,24 +152,61 @@ public class DepartmentService {
             return;
         }
 
-        String depTree = parent.getDepTree();
-        String[] parts = depTree.split("_");
-
-        String root = parts.length > 0 ? parts[0] : parent.getCompanyId();
-        String predecessors = parts.length > 1 ? parts[1] : "null";
-        String children = parts.length > 2 ? parts[2] : "null";
-
-        // 更新children
-        if ("null".equals(children)) {
-            children = String.valueOf(childId);
-        } else {
-            children = children + "," + childId;
-        }
-
-        String newDepTree = root + "_" + predecessors + "_" + children;
+        String newDepTree = rebuildDepTreeWithChild(parent, childId, true);
         departmentRepository.updateDepTree(parentId, newDepTree);
 
         log.info("更新父部门children: parentId={}, newDepTree={}", parentId, newDepTree);
+    }
+
+    /**
+     * 从父部门的children中移除指定子部门
+     */
+    private void removeChildFromParent(Long parentId, Long childId) {
+        SysDepartment parent = departmentRepository.findById(parentId);
+        if (parent == null) {
+            return;
+        }
+
+        String children = getChildrenFromDepTree(parent.getDepTree());
+        if ("null".equals(children)) {
+            return;
+        }
+
+        String newDepTree = rebuildDepTreeWithChild(parent, childId, false);
+        departmentRepository.updateDepTree(parentId, newDepTree);
+        log.info("从父部门移除子部门: parentId={}, childId={}, newDepTree={}", parentId, childId, newDepTree);
+    }
+
+    /**
+     * 重建dep_tree，添加或移除子部门
+     * @param department 部门实体
+     * @param childId 子部门ID
+     * @param isAdd true=添加, false=移除
+     * @return 新的dep_tree字符串
+     */
+    private String rebuildDepTreeWithChild(SysDepartment department, Long childId, boolean isAdd) {
+        String depTree = department.getDepTree();
+        String[] parts = depTree.split("_");
+
+        String root = parts.length > 0 ? parts[0] : String.valueOf(department.getCompanyId());
+        String predecessors = parts.length > 1 ? parts[1] : "null";
+        String children = parts.length > 2 ? parts[2] : "null";
+
+        if (isAdd) {
+            // 添加子部门
+            if ("null".equals(children)) {
+                children = String.valueOf(childId);
+            } else {
+                children = children + "," + childId;
+            }
+        } else {
+            // 移除子部门
+            List<String> childList = new ArrayList<>(Arrays.asList(children.split(",")));
+            childList.removeIf(c -> c.trim().equals(String.valueOf(childId)));
+            children = childList.isEmpty() ? "null" : String.join(",", childList);
+        }
+
+        return root + "_" + predecessors + "_" + children;
     }
 
     /**
@@ -186,7 +223,7 @@ public class DepartmentService {
     /**
      * 根据公司ID获取所有部门
      */
-    public List<DepartmentResponse> getDepartmentsByCompanyId(String companyId) {
+    public List<DepartmentResponse> getDepartmentsByCompanyId(Long companyId) {
         List<SysDepartment> departments = departmentRepository.findByCompanyId(companyId);
         return departments.stream()
                 .map(this::convertToResponse)
@@ -237,37 +274,6 @@ public class DepartmentService {
         int result = departmentRepository.deleteById(departmentId);
         log.info("部门删除结果: departmentId={}, result={}", departmentId, result > 0);
         return result > 0;
-    }
-
-    /**
-     * 从父部门的children中移除指定子部门
-     */
-    private void removeChildFromParent(Long parentId, Long childId) {
-        SysDepartment parent = departmentRepository.findById(parentId);
-        if (parent == null) {
-            return;
-        }
-
-        String depTree = parent.getDepTree();
-        String[] parts = depTree.split("_");
-
-        String root = parts.length > 0 ? parts[0] : parent.getCompanyId();
-        String predecessors = parts.length > 1 ? parts[1] : "null";
-        String children = parts.length > 2 ? parts[2] : "null";
-
-        if ("null".equals(children)) {
-            return;
-        }
-
-        // 移除指定的childId
-        List<String> childList = new ArrayList<>(Arrays.asList(children.split(",")));
-        childList.removeIf(c -> c.trim().equals(String.valueOf(childId)));
-
-        String newChildren = childList.isEmpty() ? "null" : String.join(",", childList);
-        String newDepTree = root + "_" + predecessors + "_" + newChildren;
-
-        departmentRepository.updateDepTree(parentId, newDepTree);
-        log.info("从父部门移除子部门: parentId={}, childId={}, newDepTree={}", parentId, childId, newDepTree);
     }
 
     /**

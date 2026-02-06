@@ -22,7 +22,7 @@ public interface DepartmentRepository {
     /**
      * 根据公司ID查询部门列表
      */
-    List<SysDepartment> findByCompanyId(String companyId);
+    List<SysDepartment> findByCompanyId(Long companyId);
 
     /**
      * 根据父部门ID查询子部门
@@ -57,11 +57,10 @@ public interface DepartmentRepository {
     /**
      * 统计公司下的部门数量
      */
-    long countByCompanyId(String companyId);
+    long countByCompanyId(Long companyId);
 
     /**
      * 根据部门名称和公司ID查询
      */
-    SysDepartment findByNameAndCompanyId(String departmentName, String companyId);
+    SysDepartment findByNameAndCompanyId(String departmentName, Long companyId);
 }
-

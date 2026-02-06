@@ -13,7 +13,7 @@ public class CreateDepartmentRequest {
     /**
      * 所属公司ID（必填）
      */
-    private String companyId;
+    private Long companyId;
 
     /**
      * 父部门ID（可选，为空则为根部门）
@@ -29,11 +29,11 @@ public class CreateDepartmentRequest {
         this.departmentName = departmentName;
     }
 
-    public String getCompanyId() {
+    public Long getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(String companyId) {
+    public void setCompanyId(Long companyId) {
         this.companyId = companyId;
     }
 

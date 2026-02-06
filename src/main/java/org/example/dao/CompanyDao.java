@@ -26,7 +26,7 @@ public class CompanyDao {
     /**
      * 根据ID查询公司
      */
-    public SysCompany selectById(String companyId) {
+    public SysCompany selectById(Long companyId) {
         log.debug("DAO: selectById, companyId={}", companyId);
         return companyMapper.selectById(companyId);
     }
@@ -85,7 +85,7 @@ public class CompanyDao {
     /**
      * 软删除公司
      */
-    public int softDeleteById(String companyId) {
+    public int softDeleteById(Long companyId) {
         log.debug("DAO: softDeleteById, companyId={}", companyId);
         SysCompany company = new SysCompany();
         company.setCompanyId(companyId);
@@ -96,7 +96,7 @@ public class CompanyDao {
     /**
      * 检查公司是否存在
      */
-    public boolean existsById(String companyId) {
+    public boolean existsById(Long companyId) {
         log.debug("DAO: existsById, companyId={}", companyId);
         return companyMapper.selectById(companyId) != null;
     }
@@ -112,4 +112,3 @@ public class CompanyDao {
         return companyMapper.selectCount(wrapper) > 0;
     }
 }
-

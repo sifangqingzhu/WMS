@@ -12,7 +12,7 @@ public class DepartmentResponse {
     private String departmentName;
     private Integer level;
     private String depTree;
-    private String companyId;
+    private Long companyId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -59,11 +59,11 @@ public class DepartmentResponse {
         this.depTree = depTree;
     }
 
-    public String getCompanyId() {
+    public Long getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(String companyId) {
+    public void setCompanyId(Long companyId) {
         this.companyId = companyId;
     }
 

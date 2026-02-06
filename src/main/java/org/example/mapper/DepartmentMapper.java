@@ -17,10 +17,10 @@ import java.util.List;
 public interface DepartmentMapper extends BaseMapper<SysDepartment> {
 
     /**
-     * 根据公司ID查询所有部门
+     * 根据公司ID查询部门列表
      */
-    @Select("SELECT * FROM sys_department WHERE company_id = #{companyId} ORDER BY level, department_id")
-    List<SysDepartment> selectByCompanyId(@Param("companyId") String companyId);
+    @Select("SELECT * FROM sys_department WHERE company_id = #{companyId}")
+    List<SysDepartment> selectByCompanyId(@Param("companyId") Long companyId);
 
     /**
      * 根据父部门ID查询子部门

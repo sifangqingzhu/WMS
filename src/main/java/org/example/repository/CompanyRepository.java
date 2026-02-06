@@ -23,6 +23,6 @@ public interface CompanyRepository extends IService<SysCompany> {
     /**
      * 检查公司是否存在
      */
-    boolean companyExists(String companyId);
+    boolean companyExists(Long companyId);
 }
 

@@ -48,7 +48,7 @@ public class SysUser {
      * 上级公司ID
      */
     @TableField("company_id")
-    private String companyId;
+    private Long companyId;
 
     /**
      * 软删除标记 (0-未删除, 1-已删除)
@@ -139,11 +139,11 @@ public class SysUser {
         this.name = name;
     }
 
-    public String getCompanyId() {
+    public Long getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(String companyId) {
+    public void setCompanyId(Long companyId) {
         this.companyId = companyId;
     }
 

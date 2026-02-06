@@ -28,7 +28,7 @@ public class SysUserArchive {
     private String name;
 
     @TableField("company_id")
-    private String companyId;
+    private Long companyId;
 
     @TableField("is_delete")
     private Integer isDelete;
@@ -95,8 +95,8 @@ public class SysUserArchive {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getCompanyId() { return companyId; }
-    public void setCompanyId(String companyId) { this.companyId = companyId; }
+    public Long getCompanyId() { return companyId; }
+    public void setCompanyId(Long companyId) { this.companyId = companyId; }
 
     public Integer getIsDelete() { return isDelete; }
     public void setIsDelete(Integer isDelete) { this.isDelete = isDelete; }

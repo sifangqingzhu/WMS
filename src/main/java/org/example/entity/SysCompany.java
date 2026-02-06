@@ -11,8 +11,8 @@ public class SysCompany {
     /**
      * 公司ID
      */
-    @TableId(value = "company_id", type = IdType.INPUT)
-    private String companyId;
+    @TableId(value = "company_id", type = IdType.AUTO)
+    private Long companyId;
 
     /**
      * 公司名称
@@ -73,11 +73,11 @@ public class SysCompany {
     }
 
     // Getters and Setters
-    public String getCompanyId() {
+    public Long getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(String companyId) {
+    public void setCompanyId(Long companyId) {
         this.companyId = companyId;
     }
 

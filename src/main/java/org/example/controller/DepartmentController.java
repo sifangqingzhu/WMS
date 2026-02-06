@@ -46,7 +46,7 @@ public class DepartmentController {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error(400, "部门名称不能为空"));
         }
-        if (request.getCompanyId() == null || request.getCompanyId().trim().isEmpty()) {
+        if (request.getCompanyId() == null) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error(400, "公司ID不能为空"));
         }
@@ -88,7 +88,7 @@ public class DepartmentController {
     @GetMapping("/company/{companyId}")
     @Operation(summary = "获取公司部门列表", description = "根据公司ID获取该公司下所有部门")
     public ResponseEntity<ApiResponse<List<DepartmentResponse>>> getDepartmentsByCompany(
-            @PathVariable String companyId) {
+            @PathVariable Long companyId) {
 
         log.info("获取公司部门列表: companyId={}", companyId);
 

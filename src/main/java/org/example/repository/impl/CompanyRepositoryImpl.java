@@ -33,7 +33,7 @@ public class CompanyRepositoryImpl extends ServiceImpl<CompanyMapper, SysCompany
     }
 
     @Override
-    public boolean companyExists(String companyId) {
+    public boolean companyExists(Long companyId) {
         return companyDao.existsById(companyId);
     }
 }

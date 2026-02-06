@@ -40,7 +40,7 @@ public class SysDepartment {
      * 所属公司ID
      */
     @TableField("company_id")
-    private String companyId;
+    private Long companyId;
 
     /**
      * 创建时间
@@ -91,11 +91,11 @@ public class SysDepartment {
         this.depTree = depTree;
     }
 
-    public String getCompanyId() {
+    public Long getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(String companyId) {
+    public void setCompanyId(Long companyId) {
         this.companyId = companyId;
     }
 
